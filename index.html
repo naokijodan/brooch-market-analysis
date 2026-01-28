@@ -41,16 +41,6 @@
         }
         .header h1 { font-size: 1.8em; margin-bottom: 5px; }
         .header p { opacity: 0.9; font-size: 0.9em; }
-        .nav-links {
-            background: var(--bg-secondary);
-            padding: 10px 20px;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .nav-links a {
-            color: var(--accent);
-            text-decoration: none;
-            font-weight: 600;
-        }
         .controls {
             display: flex;
             flex-wrap: wrap;
@@ -238,7 +228,15 @@
             color: var(--text-secondary);
             margin-left: 10px;
         }
-        @media (max-width: 768px) {
+                .search-checkbox {
+            margin-left: 5px;
+            margin-right: 10px;
+            cursor: pointer;
+            width: 16px;
+            height: 16px;
+            vertical-align: middle;
+        }
+@media (max-width: 768px) {
             .chart-grid { grid-template-columns: 1fr; }
             .controls { flex-direction: column; }
         }
@@ -248,10 +246,6 @@
     <div class="header">
         <h1>ブローチ市場データ分析</h1>
         <p>データ期間: 2025-01-26 ~ 2026-01-26 | 生成日: 2026-01-27</p>
-    </div>
-
-    <div class="nav-links">
-        <a href="brand-detail.html">📊 ブランド別詳細分析 →</a>
     </div>
 
     <div class="controls">
@@ -797,7 +791,9 @@
                     <td class="${breakeven > 0 ? 'positive' : 'negative'}">¥${Math.round(breakeven).toLocaleString()}</td>
                     <td>
                         <a href="https://www.ebay.com/sch/i.html?_nkw=${ebayQuery}&LH_Sold=1&LH_Complete=1" target="_blank" class="link-btn link-ebay">eBay</a>
+                        <input type="checkbox" class="search-checkbox" data-id="brooch_item_ebay">
                         <a href="https://jp.mercari.com/search?keyword=${searchQuery}&status=on_sale" target="_blank" class="link-btn link-mercari">メルカリ</a>
+                        <input type="checkbox" class="search-checkbox" data-id="brooch_item_mercari">
                     </td>
                 `;
                 tbody.appendChild(tr);
@@ -999,6 +995,32 @@
         initTheme();
         renderAllTables();
         renderCharts();
-    </script>
+    
+        // チェックボックスのlocalStorage管理
+        function initCheckboxes() {
+            document.addEventListener('DOMContentLoaded', function() {
+                // ページ読み込み時にチェック状態を復元
+                const checkboxes = document.querySelectorAll('.search-checkbox');
+                checkboxes.forEach(checkbox => {
+                    const checkboxId = checkbox.getAttribute('data-id');
+                    if (checkboxId) {
+                        const isChecked = localStorage.getItem(`checkbox_${checkboxId}`) === 'true';
+                        checkbox.checked = isChecked;
+                    }
+
+                    // チェックボックスの変更を監視
+                    checkbox.addEventListener('change', function() {
+                        const checkboxId = this.getAttribute('data-id');
+                        if (checkboxId) {
+                            localStorage.setItem(`checkbox_${checkboxId}`, this.checked);
+                        }
+                    });
+                });
+            });
+        }
+
+        // 初期化関数を呼び出し
+        initCheckboxes();
+</script>
 </body>
 </html>
